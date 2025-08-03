@@ -1,0 +1,1909 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>جنگ جهانی سوم - سیستم مدیریت</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap');
+        * { font-family: 'Vazirmatn', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #1e3a8a 0%, #7c2d12 50%, #991b1b 100%); }
+        .card-hover { transition: all 0.3s ease; }
+        .card-hover:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        .pulse-animation { animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+        .war-alert { animation: warAlert 1s infinite alternate; }
+        @keyframes warAlert { from { background-color: #dc2626; } to { background-color: #991b1b; } }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen text-white">
+    
+    <!-- Login Page -->
+    <div id="loginPage" class="min-h-screen flex items-center justify-center p-4">
+        <div class="bg-black/60 backdrop-blur-sm rounded-lg p-8 max-w-md w-full border border-red-500/30">
+            <div class="text-center mb-8">
+                <h1 class="text-3xl font-bold text-red-400 mb-2">🌍 جنگ جهانی سوم</h1>
+                <p class="text-gray-300">ورود به سیستم</p>
+            </div>
+            
+            <form id="loginForm" class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium mb-2">نام کاربری</label>
+                    <input type="text" id="username" class="w-full bg-gray-800 border border-gray-600 rounded-lg p-3 focus:border-red-500 focus:outline-none" placeholder="نام کاربری خود را وارد کنید">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium mb-2">رمز عبور</label>
+                    <input type="password" id="password" class="w-full bg-gray-800 border border-gray-600 rounded-lg p-3 focus:border-red-500 focus:outline-none" placeholder="رمز عبور خود را وارد کنید">
+                </div>
+                
+                <button type="submit" class="w-full bg-red-600 hover:bg-red-700 p-3 rounded-lg font-semibold transition-all">
+                    🔐 ورود
+                </button>
+            </form>
+            
+            <div class="mt-6 text-center text-sm text-gray-400">
+                <p>حساب‌های پیش‌فرض:</p>
+                <p>ادمین: admin / admin123</p>
+                <p>کشور نمونه: iran / iran123</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Panel -->
+    <div id="adminPanel" class="hidden">
+        <!-- Admin Header -->
+        <header class="bg-black/30 backdrop-blur-sm border-b border-red-500/30 p-4">
+            <div class="container mx-auto flex justify-between items-center">
+                <h1 class="text-3xl font-bold text-red-400">👑 پنل مدیریت</h1>
+                <div class="flex items-center gap-4">
+                    <span class="text-gray-300">خوش آمدید، ادمین</span>
+                    <button onclick="logout()" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded text-sm">
+                        خروج
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div class="container mx-auto p-6">
+            <!-- Admin Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div class="bg-black/40 backdrop-blur-sm rounded-lg p-6 border border-blue-500/30 card-hover">
+                    <h3 class="text-lg font-semibold text-blue-400 mb-2">🏛️ کل کشورها</h3>
+                    <div class="text-2xl font-bold" id="totalCountries">5</div>
+                </div>
+                <div class="bg-black/40 backdrop-blur-sm rounded-lg p-6 border border-green-500/30 card-hover">
+                    <h3 class="text-lg font-semibold text-green-400 mb-2">⚔️ جنگ‌های فعال</h3>
+                    <div class="text-2xl font-bold" id="activeWars">2</div>
+                </div>
+                <div class="bg-black/40 backdrop-blur-sm rounded-lg p-6 border border-yellow-500/30 card-hover">
+                    <h3 class="text-lg font-semibold text-yellow-400 mb-2">💰 کل اقتصاد</h3>
+                    <div class="text-2xl font-bold" id="totalEconomy">15.2B</div>
+                </div>
+                <div class="bg-black/40 backdrop-blur-sm rounded-lg p-6 border border-red-500/30 card-hover">
+                    <h3 class="text-lg font-semibold text-red-400 mb-2">📊 وضعیت جهان</h3>
+                    <div class="text-xl font-bold text-red-400 pulse-animation">🔥 جنگ</div>
+                </div>
+            </div>
+
+            <!-- Admin Actions -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Country Management -->
+                <div class="bg-black/40 backdrop-blur-sm rounded-lg p-6 border border-green-500/30">
+                    <h2 class="text-xl font-bold text-green-400 mb-4">🏛️ مدیریت کشورها</h2>
+                    
+                    <div class="mb-6">
+                        <h3 class="text-lg font-semibold mb-3">افزودن کشور جدید</h3>
+                        <div class="space-y-3">
+                            <input type="text" id="countryName" placeholder="نام کشور" class="w-full bg-gray-800 border border-gray-600 rounded p-2">
+                            <input type="text" id="countryUsername" placeholder="نام کاربری" class="w-full bg-gray-800 border border-gray-600 rounded p-2">
+                            <input type="password" id="countryPassword" placeholder="رمز عبور" class="w-full bg-gray-800 border border-gray-600 rounded p-2">
+                            <input type="text" id="countryFlag" placeholder="پرچم (ایموجی)" class="w-full bg-gray-800 border border-gray-600 rounded p-2">
+                            <button onclick="addCountry()" class="w-full bg-green-600 hover:bg-green-700 p-2 rounded">
+                                ➕ افزودن کشور
+                            </button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-semibold mb-3">کشورهای موجود</h3>
+                        <div id="countriesList" class="space-y-2 max-h-60 overflow-y-auto">
+                            <!-- Countries will be populated here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Country Stats Editor -->
+                <div class="bg-black/40 backdrop-blur-sm rounded-lg p-6 border border-yellow-500/30">
+                    <h2 class="text-xl font-bold text-yellow-400 mb-4">📊 ویرایش آمار کشورها</h2>
+                    
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium mb-2">انتخاب کشور</label>
+                        <select id="editCountrySelect" onchange="loadCountryForEdit()" class="w-full bg-gray-800 border border-gray-600 rounded p-2">
+                            <option value="">انتخاب کنید...</option>
+                        </select>
+                    </div>
+
+                    <div id="countryEditForm" class="hidden space-y-3">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-sm font-medium mb-1">اقتصاد</label>
+                                <input type="number" id="editEconomy" class="w-full bg-gray-800 border border-gray-600 rounded p-2">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1">نیروی نظامی</label>
+                                <input type="number" id="editMilitary" class="w-full bg-gray-800 border border-gray-600 rounded p-2">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1">تولید (%)</label>
+                                <input type="number" id="editProduction" min="0" max="100" class="w-full bg-gray-800 border border-gray-600 rounded p-2">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1">دفاع (%)</label>
+                                <input type="number" id="editDefense" min="0" max="100" class="w-full bg-gray-800 border border-gray-600 rounded p-2">
+                            </div>
+                        </div>
+                        <button onclick="saveCountryStats()" class="w-full bg-yellow-600 hover:bg-yellow-700 p-2 rounded">
+                            💾 ذخیره تغییرات
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Global Settings -->
+                <div class="bg-black/40 backdrop-blur-sm rounded-lg p-6 border border-blue-500/30">
+                    <h2 class="text-xl font-bold text-blue-400 mb-4">⚙️ تنظیمات جهانی</h2>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-2">وضعیت جهان</label>
+                            <select id="worldStatus" class="w-full bg-gray-800 border border-gray-600 rounded p-2">
+                                <option value="peace">صلح</option>
+                                <option value="tension">تنش</option>
+                                <option value="war" selected>جنگ</option>
+                                <option value="nuclear">جنگ هسته‌ای</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium mb-2">ضریب اقتصادی جهانی</label>
+                            <input type="range" id="economicMultiplier" min="0.5" max="2" step="0.1" value="1" class="w-full">
+                            <span id="economicValue" class="text-sm text-gray-400">1.0x</span>
+                        </div>
+                        
+                        <button onclick="updateGlobalSettings()" class="w-full bg-blue-600 hover:bg-blue-700 p-2 rounded">
+                            💾 ذخیره تنظیمات
+                        </button>
+                        
+                        <button onclick="sendGlobalMessage()" class="w-full bg-yellow-600 hover:bg-yellow-700 p-2 rounded">
+                            📢 ارسال پیام جهانی
+                        </button>
+                        
+                        <button onclick="resetGame()" class="w-full bg-red-600 hover:bg-red-700 p-2 rounded">
+                            🔄 ریست کامل بازی
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Requests & Activities -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
+                <!-- Scenarios & Roles -->
+                <div class="bg-black/40 backdrop-blur-sm rounded-lg p-6 border border-indigo-500/30">
+                    <h2 class="text-xl font-bold text-indigo-400 mb-4">📝 سناریوها و رول‌ها</h2>
+                    <div id="adminRequests" class="space-y-2 max-h-60 overflow-y-auto">
+                        <!-- Requests will be populated here -->
+                    </div>
+                </div>
+
+                <!-- Admin News -->
+                <div class="bg-black/40 backdrop-blur-sm rounded-lg p-6 border border-blue-500/30">
+                    <h2 class="text-xl font-bold text-blue-400 mb-4">📰 اخبار ادمین</h2>
+                    <div id="adminNews" class="space-y-2 max-h-60 overflow-y-auto">
+                        <!-- Admin news will be populated here -->
+                    </div>
+                </div>
+
+                <!-- Recent Activities -->
+                <div class="bg-black/40 backdrop-blur-sm rounded-lg p-6 border border-purple-500/30">
+                    <h2 class="text-xl font-bold text-purple-400 mb-4">📊 فعالیت‌های اخیر</h2>
+                    <div id="recentActivities" class="space-y-2 max-h-60 overflow-y-auto">
+                        <div class="bg-red-900/30 p-3 rounded">
+                            <span class="text-red-400">⚔️</span> ایران به عراق حمله کرد - 2 دقیقه پیش
+                        </div>
+                        <div class="bg-green-900/30 p-3 rounded">
+                            <span class="text-green-400">🤝</span> آمریکا و انگلیس اتحاد تشکیل دادند - 5 دقیقه پیش
+                        </div>
+                        <div class="bg-blue-900/30 p-3 rounded">
+                            <span class="text-blue-400">💱</span> چین با روسیه معامله کرد - 8 دقیقه پیش
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Country Panel -->
+    <div id="countryPanel" class="hidden">
+        <!-- Country Header -->
+        <header class="bg-black/30 backdrop-blur-sm border-b border-red-500/30 p-4">
+            <div class="container mx-auto flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <span id="countryFlag" class="text-3xl">🇮🇷</span>
+                    <h1 id="countryTitle" class="text-3xl font-bold text-red-400">ایران</h1>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="text-sm">
+                        <span class="text-gray-300">وضعیت:</span>
+                        <span id="countryStatus" class="text-green-400 font-bold">فعال</span>
+                    </div>
+                    <button onclick="logout()" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded text-sm">
+                        خروج
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div class="container mx-auto p-6">
+            <!-- Country Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div class="bg-black/40 backdrop-blur-sm rounded-lg p-6 border border-blue-500/30 card-hover">
+                    <h3 class="text-lg font-semibold text-blue-400 mb-2">💰 اقتصاد</h3>
+                    <div class="text-2xl font-bold" id="countryEconomy">2,500,000</div>
+                    <div class="text-sm text-gray-400">میلیون دلار</div>
+                </div>
+                <div class="bg-black/40 backdrop-blur-sm rounded-lg p-6 border border-red-500/30 card-hover">
+                    <h3 class="text-lg font-semibold text-red-400 mb-2">⚔️ نیروی نظامی</h3>
+                    <div class="text-2xl font-bold" id="countryMilitary">1,200,000</div>
+                    <div class="text-sm text-gray-400">سرباز</div>
+                </div>
+                <div class="bg-black/40 backdrop-blur-sm rounded-lg p-6 border border-green-500/30 card-hover">
+                    <h3 class="text-lg font-semibold text-green-400 mb-2">🏭 تولید</h3>
+                    <div class="text-2xl font-bold" id="countryProduction">85%</div>
+                    <div class="text-sm text-gray-400">ظرفیت</div>
+                </div>
+                <div class="bg-black/40 backdrop-blur-sm rounded-lg p-6 border border-yellow-500/30 card-hover">
+                    <h3 class="text-lg font-semibold text-yellow-400 mb-2">🛡️ دفاع</h3>
+                    <div class="text-2xl font-bold" id="countryDefense">92%</div>
+                    <div class="text-sm text-gray-400">آمادگی</div>
+                </div>
+            </div>
+
+            <!-- Military Equipment -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div class="bg-black/40 backdrop-blur-sm rounded-lg p-6 border border-red-500/30 card-hover">
+                    <h3 class="text-lg font-semibold text-red-400 mb-2">🚀 موشک‌ها</h3>
+                    <div class="text-2xl font-bold" id="countryMissiles">450</div>
+                    <div class="text-sm text-gray-400">واحد</div>
+                </div>
+                <div class="bg-black/40 backdrop-blur-sm rounded-lg p-6 border border-orange-500/30 card-hover">
+                    <h3 class="text-lg font-semibold text-orange-400 mb-2">🛡️ تانک‌ها</h3>
+                    <div class="text-2xl font-bold" id="countryTanks">1,200</div>
+                    <div class="text-sm text-gray-400">واحد</div>
+                </div>
+                <div class="bg-black/40 backdrop-blur-sm rounded-lg p-6 border border-cyan-500/30 card-hover">
+                    <h3 class="text-lg font-semibold text-cyan-400 mb-2">✈️ جنگنده‌ها</h3>
+                    <div class="text-2xl font-bold" id="countryFighters">180</div>
+                    <div class="text-sm text-gray-400">واحد</div>
+                </div>
+                <div class="bg-black/40 backdrop-blur-sm rounded-lg p-6 border border-purple-500/30 card-hover">
+                    <h3 class="text-lg font-semibold text-purple-400 mb-2">🚁 هلیکوپترها</h3>
+                    <div class="text-2xl font-bold" id="countryHelicopters">95</div>
+                    <div class="text-sm text-gray-400">واحد</div>
+                </div>
+            </div>
+
+            <!-- Additional Equipment -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div class="bg-black/40 backdrop-blur-sm rounded-lg p-6 border border-emerald-500/30 card-hover">
+                    <h3 class="text-lg font-semibold text-emerald-400 mb-2">🛡️ پدافند هوایی</h3>
+                    <div class="text-2xl font-bold" id="countryAirDefense">120</div>
+                    <div class="text-sm text-gray-400">واحد</div>
+                </div>
+                <div class="bg-black/40 backdrop-blur-sm rounded-lg p-6 border border-teal-500/30 card-hover">
+                    <h3 class="text-lg font-semibold text-teal-400 mb-2">👥 نیروی انسانی</h3>
+                    <div class="text-2xl font-bold" id="countryPersonnel">850,000</div>
+                    <div class="text-sm text-gray-400">نفر</div>
+                </div>
+            </div>
+
+            <!-- Country Actions -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Military Operations -->
+                <div class="bg-black/40 backdrop-blur-sm rounded-lg p-6 border border-red-500/30">
+                    <h2 class="text-xl font-bold text-red-400 mb-4">⚔️ عملیات نظامی</h2>
+                    <div class="space-y-4">
+                        <button onclick="launchAttack()" class="w-full bg-red-600 hover:bg-red-700 p-3 rounded-lg font-semibold transition-all war-alert">
+                            🚀 حمله موشکی
+                        </button>
+                        <button onclick="deployTroops()" class="w-full bg-orange-600 hover:bg-orange-700 p-3 rounded-lg font-semibold transition-all">
+                            🪖 اعزام نیرو
+                        </button>
+                        <button onclick="activateDefense()" class="w-full bg-blue-600 hover:bg-blue-700 p-3 rounded-lg font-semibold transition-all">
+                            🛡️ فعال‌سازی پدافند
+                        </button>
+                        <button onclick="spyMission()" class="w-full bg-purple-600 hover:bg-purple-700 p-3 rounded-lg font-semibold transition-all">
+                            🕵️ ماموریت جاسوسی
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Diplomacy & Trade -->
+                <div class="bg-black/40 backdrop-blur-sm rounded-lg p-6 border border-green-500/30">
+                    <h2 class="text-xl font-bold text-green-400 mb-4">🤝 دیپلماسی و تجارت</h2>
+                    <div class="space-y-4">
+                        <button onclick="openTradePanel()" class="w-full bg-green-600 hover:bg-green-700 p-3 rounded-lg font-semibold transition-all">
+                            💱 بازار تجاری
+                        </button>
+
+                        <button onclick="sendStatement()" class="w-full bg-yellow-600 hover:bg-yellow-700 p-3 rounded-lg font-semibold transition-all">
+                            📜 صدور بیانیه
+                        </button>
+                        <button onclick="economicSanction()" class="w-full bg-red-600 hover:bg-red-700 p-3 rounded-lg font-semibold transition-all">
+                            🚫 تحریم اقتصادی
+                        </button>
+                        <button onclick="sendScenario()" class="w-full bg-indigo-600 hover:bg-indigo-700 p-3 rounded-lg font-semibold transition-all">
+                            📝 ارسال سناریو
+                        </button>
+                        <button onclick="sendRole()" class="w-full bg-pink-600 hover:bg-pink-700 p-3 rounded-lg font-semibold transition-all">
+                            🎭 ارسال رول
+                        </button>
+                        <button onclick="declareWar()" class="w-full bg-red-800 hover:bg-red-900 p-3 rounded-lg font-semibold transition-all war-alert">
+                            ⚔️ اعلان جنگ
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- News & Intelligence -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
+                <!-- Latest News -->
+                <div class="bg-black/40 backdrop-blur-sm rounded-lg p-6 border border-blue-500/30">
+                    <h2 class="text-xl font-bold text-blue-400 mb-4">📰 آخرین اخبار</h2>
+                    <div id="newsFeed" class="space-y-3 max-h-60 overflow-y-auto">
+                        <div class="bg-red-900/30 p-3 rounded">
+                            <div class="font-semibold text-red-400">🚨 هشدار امنیتی</div>
+                            <div class="text-sm text-gray-300">حمله سایبری به زیرساخت‌های کشور شناسایی شد</div>
+                            <div class="text-xs text-gray-500 mt-1">5 دقیقه پیش</div>
+                        </div>
+                        <div class="bg-green-900/30 p-3 rounded">
+                            <div class="font-semibold text-green-400">💰 اقتصاد</div>
+                            <div class="text-sm text-gray-300">صادرات نفت 15% افزایش یافت</div>
+                            <div class="text-xs text-gray-500 mt-1">12 دقیقه پیش</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Intelligence Reports -->
+                <div class="bg-black/40 backdrop-blur-sm rounded-lg p-6 border border-purple-500/30">
+                    <h2 class="text-xl font-bold text-purple-400 mb-4">🕵️ گزارش‌های اطلاعاتی</h2>
+                    <div id="intelligenceReports" class="space-y-3 max-h-60 overflow-y-auto">
+                        <div class="bg-purple-900/30 p-3 rounded">
+                            <div class="font-semibold text-purple-400">🎯 هدف شناسایی شد</div>
+                            <div class="text-sm text-gray-300">کشور دشمن در حال تقویت دفاع هوایی است</div>
+                            <div class="text-xs text-gray-500 mt-1">محرمانه</div>
+                        </div>
+                        <div class="bg-yellow-900/30 p-3 rounded">
+                            <div class="font-semibold text-yellow-400">📊 تحلیل اقتصادی</div>
+                            <div class="text-sm text-gray-300">کاهش 8% در تولید نظامی کشورهای همسایه</div>
+                            <div class="text-xs text-gray-500 mt-1">تایید شده</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Trade Modal -->
+    <div id="tradeModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50">
+        <div class="bg-gray-900 rounded-lg p-6 max-w-md w-full mx-4 border border-green-500/30">
+            <h3 class="text-xl font-bold text-green-400 mb-4">💱 بازار تجاری</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium mb-2">کشور مقصد</label>
+                    <select id="tradeTarget" class="w-full bg-gray-800 border border-gray-600 rounded p-2">
+                        <option>آمریکا</option>
+                        <option>چین</option>
+                        <option>روسیه</option>
+                        <option>آلمان</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">نوع کالا</label>
+                    <select id="tradeItem" class="w-full bg-gray-800 border border-gray-600 rounded p-2">
+                        <option>نفت</option>
+                        <option>گاز طبیعی</option>
+                        <option>تسلیحات</option>
+                        <option>فناوری</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">مقدار</label>
+                    <input type="number" id="tradeAmount" class="w-full bg-gray-800 border border-gray-600 rounded p-2" placeholder="1000">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">قیمت (میلیون دلار)</label>
+                    <input type="number" id="tradePrice" class="w-full bg-gray-800 border border-gray-600 rounded p-2" placeholder="50">
+                </div>
+                <div class="flex gap-3">
+                    <button onclick="executeTrade()" class="flex-1 bg-green-600 hover:bg-green-700 p-2 rounded">
+                        ✅ انجام معامله
+                    </button>
+                    <button onclick="closeTradeModal()" class="flex-1 bg-gray-600 hover:bg-gray-700 p-2 rounded">
+                        ❌ لغو
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statement Modal -->
+    <div id="statementModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50">
+        <div class="bg-gray-900 rounded-lg p-6 max-w-md w-full mx-4 border border-yellow-500/30">
+            <h3 class="text-xl font-bold text-yellow-400 mb-4">📜 صدور بیانیه</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium mb-2">عنوان بیانیه</label>
+                    <input type="text" id="statementTitle" class="w-full bg-gray-800 border border-gray-600 rounded p-2" placeholder="عنوان بیانیه">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">متن بیانیه</label>
+                    <textarea id="statementText" rows="4" class="w-full bg-gray-800 border border-gray-600 rounded p-2" placeholder="متن بیانیه خود را وارد کنید..."></textarea>
+                </div>
+                <div class="flex gap-3">
+                    <button onclick="publishStatement()" class="flex-1 bg-yellow-600 hover:bg-yellow-700 p-2 rounded">
+                        📢 انتشار بیانیه
+                    </button>
+                    <button onclick="closeStatementModal()" class="flex-1 bg-gray-600 hover:bg-gray-700 p-2 rounded">
+                        ❌ لغو
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Attack Modal -->
+    <div id="attackModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50">
+        <div class="bg-gray-900 rounded-lg p-6 max-w-md w-full mx-4 border border-red-500/30">
+            <h3 class="text-xl font-bold text-red-400 mb-4">🚀 حمله موشکی</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium mb-2">کشور مقصد</label>
+                    <select id="attackTarget" class="w-full bg-gray-800 border border-gray-600 rounded p-2">
+                        <option>آمریکا</option>
+                        <option>چین</option>
+                        <option>روسیه</option>
+                        <option>آلمان</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">تعداد موشک</label>
+                    <input type="number" id="missileCount" class="w-full bg-gray-800 border border-gray-600 rounded p-2" placeholder="10" max="450">
+                </div>
+                <div class="text-sm text-gray-400">
+                    موشک‌های موجود: <span id="availableMissiles">450</span>
+                </div>
+                <div class="flex gap-3">
+                    <button onclick="executeAttack()" class="flex-1 bg-red-600 hover:bg-red-700 p-2 rounded">
+                        🚀 شلیک موشک
+                    </button>
+                    <button onclick="closeAttackModal()" class="flex-1 bg-gray-600 hover:bg-gray-700 p-2 rounded">
+                        ❌ لغو
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Deploy Modal -->
+    <div id="deployModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50">
+        <div class="bg-gray-900 rounded-lg p-6 max-w-md w-full mx-4 border border-orange-500/30">
+            <h3 class="text-xl font-bold text-orange-400 mb-4">🪖 اعزام نیرو</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium mb-2">کشور مقصد</label>
+                    <select id="deployTarget" class="w-full bg-gray-800 border border-gray-600 rounded p-2">
+                        <option>آمریکا</option>
+                        <option>چین</option>
+                        <option>روسیه</option>
+                        <option>آلمان</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">تعداد تانک</label>
+                    <input type="number" id="tankCount" class="w-full bg-gray-800 border border-gray-600 rounded p-2" placeholder="50">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">تعداد جنگنده</label>
+                    <input type="number" id="fighterCount" class="w-full bg-gray-800 border border-gray-600 rounded p-2" placeholder="10">
+                </div>
+                <div class="flex gap-3">
+                    <button onclick="executeDeploy()" class="flex-1 bg-orange-600 hover:bg-orange-700 p-2 rounded">
+                        🪖 اعزام
+                    </button>
+                    <button onclick="closeDeployModal()" class="flex-1 bg-gray-600 hover:bg-gray-700 p-2 rounded">
+                        ❌ لغو
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Spy Modal -->
+    <div id="spyModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50">
+        <div class="bg-gray-900 rounded-lg p-6 max-w-md w-full mx-4 border border-purple-500/30">
+            <h3 class="text-xl font-bold text-purple-400 mb-4">🕵️ ماموریت جاسوسی</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium mb-2">کشور مقصد</label>
+                    <select id="spyTarget" class="w-full bg-gray-800 border border-gray-600 rounded p-2">
+                        <option>آمریکا</option>
+                        <option>چین</option>
+                        <option>روسیه</option>
+                        <option>آلمان</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">نوع ماموریت</label>
+                    <select id="spyMissionType" class="w-full bg-gray-800 border border-gray-600 rounded p-2">
+                        <option>جمع‌آوری اطلاعات نظامی</option>
+                        <option>جاسوسی اقتصادی</option>
+                        <option>نفوذ سایبری</option>
+                        <option>تخریب زیرساخت</option>
+                    </select>
+                </div>
+                <div class="flex gap-3">
+                    <button onclick="executeSpy()" class="flex-1 bg-purple-600 hover:bg-purple-700 p-2 rounded">
+                        🕵️ شروع ماموریت
+                    </button>
+                    <button onclick="closeSpyModal()" class="flex-1 bg-gray-600 hover:bg-gray-700 p-2 rounded">
+                        ❌ لغو
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sanction Modal -->
+    <div id="sanctionModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50">
+        <div class="bg-gray-900 rounded-lg p-6 max-w-md w-full mx-4 border border-red-500/30">
+            <h3 class="text-xl font-bold text-red-400 mb-4">🚫 تحریم اقتصادی</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium mb-2">کشور مورد نظر</label>
+                    <select id="sanctionTarget" class="w-full bg-gray-800 border border-gray-600 rounded p-2">
+                        <option>آمریکا</option>
+                        <option>چین</option>
+                        <option>روسیه</option>
+                        <option>آلمان</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">نوع تحریم</label>
+                    <select id="sanctionType" class="w-full bg-gray-800 border border-gray-600 rounded p-2">
+                        <option>تحریم نفتی</option>
+                        <option>تحریم بانکی</option>
+                        <option>تحریم تجاری</option>
+                        <option>تحریم فناوری</option>
+                    </select>
+                </div>
+                <div class="flex gap-3">
+                    <button onclick="executeSanction()" class="flex-1 bg-red-600 hover:bg-red-700 p-2 rounded">
+                        🚫 اعمال تحریم
+                    </button>
+                    <button onclick="closeSanctionModal()" class="flex-1 bg-gray-600 hover:bg-gray-700 p-2 rounded">
+                        ❌ لغو
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scenario Modal -->
+    <div id="scenarioModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50">
+        <div class="bg-gray-900 rounded-lg p-6 max-w-md w-full mx-4 border border-indigo-500/30">
+            <h3 class="text-xl font-bold text-indigo-400 mb-4">📝 ارسال سناریو</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium mb-2">عنوان سناریو</label>
+                    <input type="text" id="scenarioTitle" class="w-full bg-gray-800 border border-gray-600 rounded p-2" placeholder="عنوان سناریو">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">شرح سناریو</label>
+                    <textarea id="scenarioText" rows="4" class="w-full bg-gray-800 border border-gray-600 rounded p-2" placeholder="سناریو خود را شرح دهید..."></textarea>
+                </div>
+                <div class="flex gap-3">
+                    <button onclick="submitScenario()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 p-2 rounded">
+                        📝 ارسال سناریو
+                    </button>
+                    <button onclick="closeScenarioModal()" class="flex-1 bg-gray-600 hover:bg-gray-700 p-2 rounded">
+                        ❌ لغو
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Role Modal -->
+    <div id="roleModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50">
+        <div class="bg-gray-900 rounded-lg p-6 max-w-md w-full mx-4 border border-pink-500/30">
+            <h3 class="text-xl font-bold text-pink-400 mb-4">🎭 ارسال رول</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium mb-2">عنوان رول</label>
+                    <input type="text" id="roleTitle" class="w-full bg-gray-800 border border-gray-600 rounded p-2" placeholder="عنوان رول">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">شرح رول</label>
+                    <textarea id="roleText" rows="4" class="w-full bg-gray-800 border border-gray-600 rounded p-2" placeholder="رول خود را شرح دهید..."></textarea>
+                </div>
+                <div class="flex gap-3">
+                    <button onclick="submitRole()" class="flex-1 bg-pink-600 hover:bg-pink-700 p-2 rounded">
+                        🎭 ارسال رول
+                    </button>
+                    <button onclick="closeRoleModal()" class="flex-1 bg-gray-600 hover:bg-gray-700 p-2 rounded">
+                        ❌ لغو
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Equipment Edit Modal -->
+    <div id="equipmentModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50">
+        <div class="bg-gray-900 rounded-lg p-6 max-w-md w-full mx-4 border border-cyan-500/30">
+            <h3 class="text-xl font-bold text-cyan-400 mb-4">⚙️ ویرایش تجهیزات</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium mb-2">موشک‌ها</label>
+                    <input type="number" id="editMissiles" class="w-full bg-gray-800 border border-gray-600 rounded p-2">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">تانک‌ها</label>
+                    <input type="number" id="editTanks" class="w-full bg-gray-800 border border-gray-600 rounded p-2">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">جنگنده‌ها</label>
+                    <input type="number" id="editFighters" class="w-full bg-gray-800 border border-gray-600 rounded p-2">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">هلیکوپترها</label>
+                    <input type="number" id="editHelicopters" class="w-full bg-gray-800 border border-gray-600 rounded p-2">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">پدافند هوایی</label>
+                    <input type="number" id="editAirDefense" class="w-full bg-gray-800 border border-gray-600 rounded p-2">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">نیروی انسانی</label>
+                    <input type="number" id="editPersonnel" class="w-full bg-gray-800 border border-gray-600 rounded p-2">
+                </div>
+                <div class="flex gap-3">
+                    <button onclick="saveEquipment()" class="flex-1 bg-cyan-600 hover:bg-cyan-700 p-2 rounded">
+                        💾 ذخیره
+                    </button>
+                    <button onclick="closeEquipmentModal()" class="flex-1 bg-gray-600 hover:bg-gray-700 p-2 rounded">
+                        ❌ لغو
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- War Declaration Modal -->
+    <div id="warModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50">
+        <div class="bg-gray-900 rounded-lg p-6 max-w-md w-full mx-4 border border-red-800/50">
+            <h3 class="text-xl font-bold text-red-400 mb-4">⚔️ اعلان جنگ</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium mb-2">کشور مقصد</label>
+                    <select id="warTarget" class="w-full bg-gray-800 border border-gray-600 rounded p-2">
+                        <option>آمریکا</option>
+                        <option>چین</option>
+                        <option>روسیه</option>
+                        <option>آلمان</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">تعداد موشک</label>
+                    <input type="number" id="warMissiles" class="w-full bg-gray-800 border border-gray-600 rounded p-2" placeholder="100">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">تعداد تانک</label>
+                    <input type="number" id="warTanks" class="w-full bg-gray-800 border border-gray-600 rounded p-2" placeholder="50">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">تعداد جنگنده</label>
+                    <input type="number" id="warFighters" class="w-full bg-gray-800 border border-gray-600 rounded p-2" placeholder="20">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">دلیل جنگ</label>
+                    <textarea id="warReason" rows="3" class="w-full bg-gray-800 border border-gray-600 rounded p-2" placeholder="دلیل اعلان جنگ..."></textarea>
+                </div>
+                <div class="flex gap-3">
+                    <button onclick="executeWarDeclaration()" class="flex-1 bg-red-800 hover:bg-red-900 p-2 rounded">
+                        ⚔️ اعلان جنگ
+                    </button>
+                    <button onclick="closeWarModal()" class="flex-1 bg-gray-600 hover:bg-gray-700 p-2 rounded">
+                        ❌ لغو
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Trade Request Modal -->
+    <div id="tradeRequestModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50">
+        <div class="bg-gray-900 rounded-lg p-6 max-w-md w-full mx-4 border border-green-500/30">
+            <h3 class="text-xl font-bold text-green-400 mb-4">📨 درخواست تجاری</h3>
+            <div id="tradeRequestContent" class="space-y-4">
+                <!-- Trade request details will be populated here -->
+            </div>
+            <div class="flex gap-3 mt-4">
+                <button onclick="acceptTradeRequest()" class="flex-1 bg-green-600 hover:bg-green-700 p-2 rounded">
+                    ✅ تایید
+                </button>
+                <button onclick="rejectTradeRequest()" class="flex-1 bg-red-600 hover:bg-red-700 p-2 rounded">
+                    ❌ رد
+                </button>
+                <button onclick="closeTradeRequestModal()" class="flex-1 bg-gray-600 hover:bg-gray-700 p-2 rounded">
+                    بستن
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Spy Results Modal -->
+    <div id="spyResultsModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50">
+        <div class="bg-gray-900 rounded-lg p-6 max-w-md w-full mx-4 border border-purple-500/30">
+            <h3 class="text-xl font-bold text-purple-400 mb-4">🕵️ نتایج جاسوسی</h3>
+            <div id="spyResultsContent" class="space-y-4">
+                <!-- Spy results will be populated here -->
+            </div>
+            <div class="flex justify-center mt-4">
+                <button onclick="closeSpyResultsModal()" class="bg-purple-600 hover:bg-purple-700 px-6 py-2 rounded">
+                    بستن
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game Data Storage
+        let gameData = {
+            users: {
+                'admin': { password: 'admin123', role: 'admin' },
+                'iran': { password: 'iran123', role: 'country', country: 'ایران', flag: '🇮🇷' },
+                'usa': { password: 'usa123', role: 'country', country: 'آمریکا', flag: '🇺🇸' },
+                'china': { password: 'china123', role: 'country', country: 'چین', flag: '🇨🇳' }
+            },
+            countries: {
+                'iran': { 
+                    name: 'ایران', flag: '🇮🇷', economy: 2500000, military: 1200000, production: 85, defense: 92,
+                    equipment: { missiles: 450, tanks: 1200, fighters: 180, helicopters: 95, airDefense: 120, personnel: 850000 }
+                },
+                'usa': { 
+                    name: 'آمریکا', flag: '🇺🇸', economy: 5000000, military: 2000000, production: 95, defense: 88,
+                    equipment: { missiles: 800, tanks: 2500, fighters: 350, helicopters: 200, airDefense: 300, personnel: 1500000 }
+                },
+                'china': { 
+                    name: 'چین', flag: '🇨🇳', economy: 4500000, military: 1800000, production: 90, defense: 85,
+                    equipment: { missiles: 650, tanks: 2000, fighters: 280, helicopters: 150, airDefense: 250, personnel: 1200000 }
+                }
+            },
+            currentUser: null,
+            currentEditingCountry: null,
+            currentTradeRequest: null,
+            worldStatus: 'war',
+            statements: [],
+            tradeRequests: [],
+            adminRequests: [],
+            newsItems: []
+        };
+
+        // Login System
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (gameData.users[username] && gameData.users[username].password === password) {
+                gameData.currentUser = username;
+                const user = gameData.users[username];
+                
+                if (user.role === 'admin') {
+                    showAdminPanel();
+                } else if (user.role === 'country') {
+                    showCountryPanel(username);
+                }
+                
+                showNotification('✅ ورود موفقیت‌آمیز!', 'success');
+            } else {
+                showNotification('❌ نام کاربری یا رمز عبور اشتباه است!', 'error');
+            }
+        });
+
+        // Show Admin Panel
+        function showAdminPanel() {
+            document.getElementById('loginPage').classList.add('hidden');
+            document.getElementById('countryPanel').classList.add('hidden');
+            document.getElementById('adminPanel').classList.remove('hidden');
+            updateAdminStats();
+            loadCountriesList();
+            loadAdminRequests();
+            loadAdminNews();
+        }
+
+        // Show Country Panel
+        function showCountryPanel(username) {
+            document.getElementById('loginPage').classList.add('hidden');
+            document.getElementById('adminPanel').classList.add('hidden');
+            document.getElementById('countryPanel').classList.remove('hidden');
+            
+            const user = gameData.users[username];
+            const country = gameData.countries[username];
+            
+            document.getElementById('countryFlag').textContent = user.flag;
+            document.getElementById('countryTitle').textContent = user.country;
+            
+            if (country) {
+                document.getElementById('countryEconomy').textContent = country.economy.toLocaleString();
+                document.getElementById('countryMilitary').textContent = country.military.toLocaleString();
+                document.getElementById('countryProduction').textContent = country.production + '%';
+                document.getElementById('countryDefense').textContent = country.defense + '%';
+                
+                // Update equipment display
+                if (country.equipment) {
+                    document.getElementById('countryMissiles').textContent = country.equipment.missiles;
+                    document.getElementById('countryTanks').textContent = country.equipment.tanks;
+                    document.getElementById('countryFighters').textContent = country.equipment.fighters;
+                    document.getElementById('countryHelicopters').textContent = country.equipment.helicopters;
+                    document.getElementById('countryAirDefense').textContent = country.equipment.airDefense;
+                    document.getElementById('countryPersonnel').textContent = country.equipment.personnel.toLocaleString();
+                }
+            }
+            
+            loadNews();
+            
+            // Check for trade requests every 2 seconds
+            setInterval(checkTradeRequests, 2000);
+        }
+
+        // Admin Functions
+        function addCountry() {
+            const name = document.getElementById('countryName').value;
+            const username = document.getElementById('countryUsername').value;
+            const password = document.getElementById('countryPassword').value;
+            const flag = document.getElementById('countryFlag').value;
+            
+            if (!name || !username || !password || !flag) {
+                showNotification('❌ لطفاً تمام فیلدها را پر کنید!', 'error');
+                return;
+            }
+            
+            if (gameData.users[username]) {
+                showNotification('❌ این نام کاربری قبلاً استفاده شده است!', 'error');
+                return;
+            }
+            
+            // Add user
+            gameData.users[username] = {
+                password: password,
+                role: 'country',
+                country: name,
+                flag: flag
+            };
+            
+            // Add country data
+            gameData.countries[username] = {
+                name: name,
+                flag: flag,
+                economy: Math.floor(Math.random() * 2000000) + 1000000,
+                military: Math.floor(Math.random() * 1000000) + 500000,
+                production: Math.floor(Math.random() * 30) + 70,
+                defense: Math.floor(Math.random() * 30) + 70,
+                equipment: {
+                    missiles: Math.floor(Math.random() * 300) + 200,
+                    tanks: Math.floor(Math.random() * 800) + 500,
+                    fighters: Math.floor(Math.random() * 100) + 50,
+                    helicopters: Math.floor(Math.random() * 50) + 30
+                }
+            };
+            
+            // Clear form
+            document.getElementById('countryName').value = '';
+            document.getElementById('countryUsername').value = '';
+            document.getElementById('countryPassword').value = '';
+            document.getElementById('countryFlag').value = '';
+            
+            loadCountriesList();
+            updateAdminStats();
+            showNotification('✅ کشور جدید با موفقیت اضافه شد!', 'success');
+        }
+
+        function loadCountriesList() {
+            const container = document.getElementById('countriesList');
+            const editSelect = document.getElementById('editCountrySelect');
+            
+            container.innerHTML = '';
+            editSelect.innerHTML = '<option value="">انتخاب کنید...</option>';
+            
+            Object.keys(gameData.users).forEach(username => {
+                const user = gameData.users[username];
+                if (user.role === 'country') {
+                    const country = gameData.countries[username];
+                    const div = document.createElement('div');
+                    div.className = 'bg-gray-800 p-3 rounded flex justify-between items-center';
+                    div.innerHTML = `
+                        <div class="flex items-center gap-2">
+                            <span class="text-xl">${user.flag}</span>
+                            <div>
+                                <div class="font-semibold">${user.country}</div>
+                                <div class="text-sm text-gray-400">@${username}</div>
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="editCountryEquipment('${username}')" class="bg-cyan-600 hover:bg-cyan-700 px-2 py-1 rounded text-xs">
+                                تجهیزات
+                            </button>
+                            <button onclick="editCountry('${username}')" class="bg-blue-600 hover:bg-blue-700 px-2 py-1 rounded text-xs">
+                                ویرایش
+                            </button>
+                            <button onclick="deleteCountry('${username}')" class="bg-red-600 hover:bg-red-700 px-2 py-1 rounded text-xs">
+                                حذف
+                            </button>
+                        </div>
+                    `;
+                    container.appendChild(div);
+                    
+                    // Add to edit select
+                    const option = document.createElement('option');
+                    option.value = username;
+                    option.textContent = user.country;
+                    editSelect.appendChild(option);
+                }
+            });
+        }
+
+        function loadCountryForEdit() {
+            const username = document.getElementById('editCountrySelect').value;
+            const form = document.getElementById('countryEditForm');
+            
+            if (!username) {
+                form.classList.add('hidden');
+                return;
+            }
+            
+            const country = gameData.countries[username];
+            if (country) {
+                document.getElementById('editEconomy').value = country.economy;
+                document.getElementById('editMilitary').value = country.military;
+                document.getElementById('editProduction').value = country.production;
+                document.getElementById('editDefense').value = country.defense;
+                form.classList.remove('hidden');
+            }
+        }
+
+        function saveCountryStats() {
+            const username = document.getElementById('editCountrySelect').value;
+            const country = gameData.countries[username];
+            
+            if (country) {
+                country.economy = parseInt(document.getElementById('editEconomy').value) || 0;
+                country.military = parseInt(document.getElementById('editMilitary').value) || 0;
+                country.production = parseInt(document.getElementById('editProduction').value) || 0;
+                country.defense = parseInt(document.getElementById('editDefense').value) || 0;
+                
+                showNotification('✅ آمار کشور به‌روزرسانی شد!', 'success');
+                updateAdminStats();
+            }
+        }
+
+        function deleteCountry(username) {
+            if (confirm('آیا از حذف این کشور اطمینان دارید؟')) {
+                delete gameData.users[username];
+                delete gameData.countries[username];
+                loadCountriesList();
+                updateAdminStats();
+                showNotification('✅ کشور حذف شد!', 'success');
+            }
+        }
+
+        function updateAdminStats() {
+            const countryCount = Object.keys(gameData.users).filter(u => gameData.users[u].role === 'country').length;
+            document.getElementById('totalCountries').textContent = countryCount;
+            
+            const totalEconomy = Object.values(gameData.countries).reduce((sum, country) => sum + country.economy, 0);
+            document.getElementById('totalEconomy').textContent = (totalEconomy / 1000000).toFixed(1) + 'B';
+        }
+
+        function updateGlobalSettings() {
+            const worldStatus = document.getElementById('worldStatus').value;
+            gameData.worldStatus = worldStatus;
+            showNotification('✅ تنظیمات جهانی به‌روزرسانی شد!', 'success');
+        }
+
+        function sendGlobalMessage() {
+            const message = prompt('پیام جهانی خود را وارد کنید:');
+            if (message && message.trim()) {
+                // Add to news for all users
+                const newsItem = {
+                    id: Date.now(),
+                    type: 'global',
+                    title: '📢 پیام جهانی',
+                    content: message,
+                    timestamp: new Date().toLocaleString('fa-IR'),
+                    author: 'ادمین',
+                    isPublic: true
+                };
+                gameData.newsItems.unshift(newsItem);
+                showNotification('📢 پیام جهانی ارسال شد!', 'success');
+                
+                // Refresh admin news if admin is viewing
+                if (gameData.currentUser === 'admin') {
+                    loadAdminNews();
+                }
+            }
+        }
+
+        function resetGame() {
+            if (confirm('آیا از ریست کامل بازی اطمینان دارید؟ این عمل غیرقابل بازگشت است!')) {
+                // Reset all country stats
+                Object.keys(gameData.countries).forEach(country => {
+                    gameData.countries[country].economy = Math.floor(Math.random() * 2000000) + 1000000;
+                    gameData.countries[country].military = Math.floor(Math.random() * 1000000) + 500000;
+                    gameData.countries[country].production = Math.floor(Math.random() * 30) + 70;
+                    gameData.countries[country].defense = Math.floor(Math.random() * 30) + 70;
+                    gameData.countries[country].equipment = {
+                        missiles: Math.floor(Math.random() * 300) + 200,
+                        tanks: Math.floor(Math.random() * 800) + 500,
+                        fighters: Math.floor(Math.random() * 100) + 50,
+                        helicopters: Math.floor(Math.random() * 50) + 30
+                    };
+                });
+                gameData.statements = [];
+                gameData.tradeRequests = [];
+                gameData.adminRequests = [];
+                updateAdminStats();
+                loadAdminRequests();
+                showNotification('🔄 بازی ریست شد!', 'success');
+            }
+        }
+
+        function editCountryEquipment(username) {
+            const country = gameData.countries[username];
+            if (!country) return;
+            
+            gameData.currentEditingCountry = username;
+            
+            document.getElementById('editMissiles').value = country.equipment.missiles;
+            document.getElementById('editTanks').value = country.equipment.tanks;
+            document.getElementById('editFighters').value = country.equipment.fighters;
+            document.getElementById('editHelicopters').value = country.equipment.helicopters;
+            document.getElementById('editAirDefense').value = country.equipment.airDefense;
+            document.getElementById('editPersonnel').value = country.equipment.personnel;
+            
+            document.getElementById('equipmentModal').classList.remove('hidden');
+            document.getElementById('equipmentModal').classList.add('flex');
+        }
+
+        function closeEquipmentModal() {
+            document.getElementById('equipmentModal').classList.add('hidden');
+            document.getElementById('equipmentModal').classList.remove('flex');
+        }
+
+        function saveEquipment() {
+            const username = gameData.currentEditingCountry;
+            const country = gameData.countries[username];
+            
+            if (country) {
+                country.equipment.missiles = parseInt(document.getElementById('editMissiles').value) || 0;
+                country.equipment.tanks = parseInt(document.getElementById('editTanks').value) || 0;
+                country.equipment.fighters = parseInt(document.getElementById('editFighters').value) || 0;
+                country.equipment.helicopters = parseInt(document.getElementById('editHelicopters').value) || 0;
+                country.equipment.airDefense = parseInt(document.getElementById('editAirDefense').value) || 0;
+                country.equipment.personnel = parseInt(document.getElementById('editPersonnel').value) || 0;
+                
+                showNotification('✅ تجهیزات به‌روزرسانی شد!', 'success');
+                closeEquipmentModal();
+            }
+        }
+
+        function loadAdminRequests() {
+            const container = document.getElementById('adminRequests');
+            container.innerHTML = '';
+            
+            if (gameData.adminRequests.length === 0) {
+                container.innerHTML = '<div class="text-gray-400 text-center">درخواستی موجود نیست</div>';
+                return;
+            }
+            
+            gameData.adminRequests.forEach((request, index) => {
+                const div = document.createElement('div');
+                div.className = `bg-${request.type === 'scenario' ? 'indigo' : 'pink'}-900/30 p-3 rounded cursor-pointer hover:bg-${request.type === 'scenario' ? 'indigo' : 'pink'}-800/40 transition-all`;
+                div.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <div onclick="toggleRequestDetails(${index})" class="flex-1">
+                            <div class="font-semibold text-${request.type === 'scenario' ? 'indigo' : 'pink'}-400">
+                                ${request.type === 'scenario' ? '📝' : '🎭'} ${request.title}
+                            </div>
+                            <div class="text-xs text-gray-500 mt-1">از: ${request.country}</div>
+                            <div id="requestDetails${index}" class="hidden text-sm text-gray-300 mt-2 p-2 bg-black/30 rounded">
+                                ${request.content}
+                            </div>
+                        </div>
+                        <button onclick="removeAdminRequest(${index})" class="text-red-400 hover:text-red-300 text-xs ml-2">
+                            ❌
+                        </button>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function toggleRequestDetails(index) {
+            const details = document.getElementById(`requestDetails${index}`);
+            if (details) {
+                details.classList.toggle('hidden');
+            }
+        }
+
+        function removeAdminRequest(index) {
+            gameData.adminRequests.splice(index, 1);
+            loadAdminRequests();
+        }
+
+        function loadAdminNews() {
+            const container = document.getElementById('adminNews');
+            container.innerHTML = '';
+            
+            // Get all news items
+            const allNews = [...gameData.newsItems];
+            
+            // Sort by timestamp (newest first)
+            allNews.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            
+            if (allNews.length === 0) {
+                container.innerHTML = '<div class="text-gray-400 text-center">خبری موجود نیست</div>';
+                return;
+            }
+            
+            allNews.forEach(item => {
+                const div = document.createElement('div');
+                let bgColor = 'bg-blue-900/30';
+                
+                switch(item.type) {
+                    case 'attack': bgColor = 'bg-red-900/30'; break;
+                    case 'war': bgColor = 'bg-red-800/30'; break;
+                    case 'war_admin': bgColor = 'bg-red-700/30'; break;
+                    case 'trade': bgColor = 'bg-green-900/30'; break;
+                    case 'global': bgColor = 'bg-purple-900/30'; break;
+                }
+                
+                div.className = `${bgColor} p-3 rounded mb-2`;
+                div.innerHTML = `
+                    <div class="font-semibold text-white text-sm">${item.title}</div>
+                    <div class="text-xs text-gray-300 mt-1">${item.content}</div>
+                    <div class="text-xs text-gray-500 mt-1">${item.timestamp}</div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        // Country Functions
+        function launchAttack() {
+            document.getElementById('attackModal').classList.remove('hidden');
+            document.getElementById('attackModal').classList.add('flex');
+            
+            const country = gameData.countries[gameData.currentUser];
+            if (country && country.equipment) {
+                document.getElementById('availableMissiles').textContent = country.equipment.missiles;
+            }
+        }
+
+        function closeAttackModal() {
+            document.getElementById('attackModal').classList.add('hidden');
+            document.getElementById('attackModal').classList.remove('flex');
+        }
+
+        function executeAttack() {
+            const target = document.getElementById('attackTarget').value;
+            const missileCount = parseInt(document.getElementById('missileCount').value);
+            
+            if (!missileCount || missileCount <= 0) {
+                showNotification('❌ تعداد موشک نامعتبر است!', 'error');
+                return;
+            }
+            
+            const attackerCountry = gameData.countries[gameData.currentUser];
+            const attackerUser = gameData.users[gameData.currentUser];
+            
+            if (attackerCountry && attackerCountry.equipment.missiles >= missileCount) {
+                // Find target country
+                let targetCountry = null;
+                let targetUsername = null;
+                
+                Object.keys(gameData.users).forEach(username => {
+                    const user = gameData.users[username];
+                    if (user.role === 'country' && user.country === target) {
+                        targetCountry = gameData.countries[username];
+                        targetUsername = username;
+                    }
+                });
+                
+                // Calculate damage based on target's defense
+                let damageMultiplier = 1;
+                let interceptedMissiles = 0;
+                
+                if (targetCountry) {
+                    const defenseEfficiency = targetCountry.defense / 100;
+                    interceptedMissiles = Math.floor(missileCount * defenseEfficiency * 0.6);
+                    const effectiveMissiles = missileCount - interceptedMissiles;
+                    damageMultiplier = effectiveMissiles / missileCount;
+                    
+                    // Apply damage to target
+                    const economicDamage = Math.floor(effectiveMissiles * 100000);
+                    const militaryDamage = Math.floor(effectiveMissiles * 5000);
+                    const equipmentDamage = Math.floor(effectiveMissiles * 0.5);
+                    
+                    targetCountry.economy = Math.max(0, targetCountry.economy - economicDamage);
+                    targetCountry.equipment.personnel = Math.max(0, targetCountry.equipment.personnel - militaryDamage);
+                    targetCountry.equipment.tanks = Math.max(0, targetCountry.equipment.tanks - equipmentDamage);
+                    targetCountry.equipment.fighters = Math.max(0, targetCountry.equipment.fighters - Math.floor(equipmentDamage * 0.3));
+                    targetCountry.equipment.airDefense = Math.max(0, targetCountry.equipment.airDefense - Math.floor(equipmentDamage * 0.2));
+                }
+                
+                // Deduct missiles from attacker
+                attackerCountry.equipment.missiles -= missileCount;
+                attackerCountry.economy = Math.max(0, attackerCountry.economy - (missileCount * 50000));
+                
+                // Create detailed news report
+                const newsItem = {
+                    id: Date.now(),
+                    type: 'attack',
+                    title: `🚀 حمله موشکی ${attackerUser.country} به ${target}`,
+                    content: `${attackerUser.flag} ${attackerUser.country} با شلیک ${missileCount} موشک به ${target} حمله کرد. ${interceptedMissiles} موشک توسط پدافند هوایی رهگیری شد. خسارات وارده: ${targetCountry ? Math.floor((missileCount - interceptedMissiles) * 100000).toLocaleString() : 'نامشخص'} میلیون دلار اقتصادی، ${targetCountry ? Math.floor((missileCount - interceptedMissiles) * 5000).toLocaleString() : 'نامشخص'} نفر تلفات انسانی و تخریب تجهیزات نظامی.`,
+                    timestamp: new Date().toLocaleString('fa-IR'),
+                    author: attackerUser.country,
+                    isPublic: true
+                };
+                
+                gameData.newsItems.unshift(newsItem);
+                
+                showNotification(`🚀 ${missileCount} موشک به ${target} شلیک شد!`, 'warning');
+                updateCountryStats();
+                closeAttackModal();
+                
+                // Clear form
+                document.getElementById('missileCount').value = '';
+            } else {
+                showNotification('❌ موشک کافی ندارید!', 'error');
+            }
+        }
+
+        function deployTroops() {
+            document.getElementById('deployModal').classList.remove('hidden');
+            document.getElementById('deployModal').classList.add('flex');
+        }
+
+        function closeDeployModal() {
+            document.getElementById('deployModal').classList.add('hidden');
+            document.getElementById('deployModal').classList.remove('flex');
+        }
+
+        function executeDeploy() {
+            const target = document.getElementById('deployTarget').value;
+            const tankCount = parseInt(document.getElementById('tankCount').value) || 0;
+            const fighterCount = parseInt(document.getElementById('fighterCount').value) || 0;
+            
+            const country = gameData.countries[gameData.currentUser];
+            if (country && country.equipment.tanks >= tankCount && country.equipment.fighters >= fighterCount) {
+                country.equipment.tanks -= tankCount;
+                country.equipment.fighters -= fighterCount;
+                country.economy = Math.max(0, country.economy - ((tankCount * 100000) + (fighterCount * 500000)));
+                
+                showNotification(`🪖 ${tankCount} تانک و ${fighterCount} جنگنده به ${target} اعزام شد!`, 'info');
+                updateCountryStats();
+                closeDeployModal();
+                
+                // Clear form
+                document.getElementById('tankCount').value = '';
+                document.getElementById('fighterCount').value = '';
+            } else {
+                showNotification('❌ تجهیزات کافی ندارید!', 'error');
+            }
+        }
+
+        function activateDefense() {
+            showNotification('🛡️ پدافند هوایی فعال شد!', 'success');
+            const country = gameData.countries[gameData.currentUser];
+            if (country) {
+                country.equipment.airDefense = Math.min(country.equipment.airDefense + 10, country.equipment.airDefense * 1.1);
+                country.economy = Math.max(0, country.economy - 50000);
+                updateCountryStats();
+            }
+        }
+
+        function declareWar() {
+            document.getElementById('warModal').classList.remove('hidden');
+            document.getElementById('warModal').classList.add('flex');
+        }
+
+        function closeWarModal() {
+            document.getElementById('warModal').classList.add('hidden');
+            document.getElementById('warModal').classList.remove('flex');
+        }
+
+        function executeWarDeclaration() {
+            const target = document.getElementById('warTarget').value;
+            const missiles = parseInt(document.getElementById('warMissiles').value) || 0;
+            const tanks = parseInt(document.getElementById('warTanks').value) || 0;
+            const fighters = parseInt(document.getElementById('warFighters').value) || 0;
+            const reason = document.getElementById('warReason').value;
+            
+            const declarerUser = gameData.users[gameData.currentUser];
+            
+            // Create public news (without equipment numbers)
+            const publicNews = {
+                id: Date.now(),
+                type: 'war',
+                title: `⚔️ ${declarerUser.country} به ${target} اعلان جنگ داد`,
+                content: `${declarerUser.flag} ${declarerUser.country} رسماً به ${target} اعلان جنگ داد. دلیل: ${reason || 'دلیل مشخص نشده'}`,
+                timestamp: new Date().toLocaleString('fa-IR'),
+                author: declarerUser.country,
+                isPublic: true
+            };
+            
+            // Create admin news (with equipment numbers)
+            const adminNews = {
+                id: Date.now() + 1,
+                type: 'war_admin',
+                title: `⚔️ جزئیات اعلان جنگ ${declarerUser.country}`,
+                content: `${declarerUser.flag} ${declarerUser.country} با ${missiles} موشک، ${tanks} تانک و ${fighters} جنگنده به ${target} اعلان جنگ داد. دلیل: ${reason || 'دلیل مشخص نشده'}`,
+                timestamp: new Date().toLocaleString('fa-IR'),
+                author: declarerUser.country,
+                isPublic: false,
+                isAdminOnly: true
+            };
+            
+            gameData.newsItems.unshift(publicNews);
+            gameData.newsItems.unshift(adminNews);
+            
+            showNotification(`⚔️ جنگ علیه ${target} اعلام شد!`, 'warning');
+            closeWarModal();
+            
+            // Clear form
+            document.getElementById('warMissiles').value = '';
+            document.getElementById('warTanks').value = '';
+            document.getElementById('warFighters').value = '';
+            document.getElementById('warReason').value = '';
+        }
+
+        function spyMission() {
+            document.getElementById('spyModal').classList.remove('hidden');
+            document.getElementById('spyModal').classList.add('flex');
+        }
+
+        function closeSpyModal() {
+            document.getElementById('spyModal').classList.add('hidden');
+            document.getElementById('spyModal').classList.remove('flex');
+        }
+
+        function executeSpy() {
+            const target = document.getElementById('spyTarget').value;
+            const missionType = document.getElementById('spyMissionType').value;
+            
+            // Find target country
+            let targetCountry = null;
+            let targetUsername = null;
+            
+            Object.keys(gameData.users).forEach(username => {
+                const user = gameData.users[username];
+                if (user.role === 'country' && user.country === target) {
+                    targetCountry = gameData.countries[username];
+                    targetUsername = username;
+                }
+            });
+            
+            const spyCountry = gameData.countries[gameData.currentUser];
+            if (spyCountry) {
+                spyCountry.economy = Math.max(0, spyCountry.economy - 25000);
+                updateCountryStats();
+            }
+            
+            showNotification(`🕵️ ماموریت ${missionType} در ${target} آغاز شد...`, 'info');
+            closeSpyModal();
+            
+            setTimeout(() => {
+                if (targetCountry) {
+                    const defenseEfficiency = targetCountry.defense / 100;
+                    const successChance = 1 - (defenseEfficiency * 0.7);
+                    
+                    if (Math.random() < successChance) {
+                        // Mission successful - show target's equipment
+                        const spyResults = `
+                            <div class="space-y-3">
+                                <div class="text-green-400 font-semibold">✅ ماموریت موفقیت‌آمیز!</div>
+                                <div class="bg-black/30 p-3 rounded">
+                                    <div class="text-sm font-semibold mb-2">تجهیزات نظامی ${target}:</div>
+                                    <div class="grid grid-cols-2 gap-2 text-xs">
+                                        <div>🚀 موشک: ${targetCountry.equipment.missiles}</div>
+                                        <div>🛡️ تانک: ${targetCountry.equipment.tanks}</div>
+                                        <div>✈️ جنگنده: ${targetCountry.equipment.fighters}</div>
+                                        <div>🚁 هلیکوپتر: ${targetCountry.equipment.helicopters}</div>
+                                        <div>🛡️ پدافند: ${targetCountry.equipment.airDefense}</div>
+                                        <div>👥 نیرو: ${targetCountry.equipment.personnel.toLocaleString()}</div>
+                                    </div>
+                                </div>
+                                <div class="bg-black/30 p-3 rounded">
+                                    <div class="text-sm font-semibold mb-2">وضعیت اقتصادی:</div>
+                                    <div class="text-xs">💰 اقتصاد: ${targetCountry.economy.toLocaleString()} میلیون دلار</div>
+                                    <div class="text-xs">🏭 تولید: ${targetCountry.production}%</div>
+                                    <div class="text-xs">🛡️ دفاع: ${targetCountry.defense}%</div>
+                                </div>
+                            </div>
+                        `;
+                        
+                        document.getElementById('spyResultsContent').innerHTML = spyResults;
+                        document.getElementById('spyResultsModal').classList.remove('hidden');
+                        document.getElementById('spyResultsModal').classList.add('flex');
+                        
+                        showNotification('📊 اطلاعات محرمانه دریافت شد!', 'success');
+                    } else {
+                        showNotification('❌ ماموریت شکست خورد! دفاع دشمن قوی بود.', 'error');
+                    }
+                } else {
+                    showNotification('📊 ماموریت انجام شد اما اطلاعات محدودی بدست آمد.', 'warning');
+                }
+            }, 2000);
+        }
+
+        function closeSpyResultsModal() {
+            document.getElementById('spyResultsModal').classList.add('hidden');
+            document.getElementById('spyResultsModal').classList.remove('flex');
+        }
+
+        function openTradePanel() {
+            document.getElementById('tradeModal').classList.remove('hidden');
+            document.getElementById('tradeModal').classList.add('flex');
+        }
+
+        function closeTradeModal() {
+            document.getElementById('tradeModal').classList.add('hidden');
+            document.getElementById('tradeModal').classList.remove('flex');
+        }
+
+        function executeTrade() {
+            const target = document.getElementById('tradeTarget').value;
+            const item = document.getElementById('tradeItem').value;
+            const amount = document.getElementById('tradeAmount').value;
+            const price = document.getElementById('tradePrice').value;
+            
+            if (!amount || !price) {
+                showNotification('❌ لطفاً تمام فیلدها را پر کنید!', 'error');
+                return;
+            }
+            
+            const senderUser = gameData.users[gameData.currentUser];
+            
+            // Create trade request
+            const tradeRequest = {
+                id: Date.now(),
+                from: gameData.currentUser,
+                fromCountry: senderUser.country,
+                fromFlag: senderUser.flag,
+                to: target,
+                item: item,
+                amount: parseInt(amount),
+                price: parseInt(price),
+                timestamp: new Date().toLocaleString('fa-IR')
+            };
+            
+            gameData.tradeRequests.push(tradeRequest);
+            
+            showNotification(`💱 درخواست تجاری به ${target} ارسال شد!`, 'info');
+            closeTradeModal();
+            
+            // Clear form
+            document.getElementById('tradeAmount').value = '';
+            document.getElementById('tradePrice').value = '';
+        }
+
+        function checkTradeRequests() {
+            const currentUserData = gameData.users[gameData.currentUser];
+            if (!currentUserData || currentUserData.role !== 'country') return;
+            
+            const pendingRequests = gameData.tradeRequests.filter(req => req.to === currentUserData.country && !req.processed);
+            
+            if (pendingRequests.length > 0) {
+                const request = pendingRequests[0];
+                gameData.currentTradeRequest = request;
+                
+                document.getElementById('tradeRequestContent').innerHTML = `
+                    <div class="space-y-3">
+                        <div class="text-center">
+                            <div class="text-lg font-semibold">${request.fromFlag} ${request.fromCountry}</div>
+                            <div class="text-sm text-gray-400">درخواست تجاری ارسال کرده</div>
+                        </div>
+                        <div class="bg-black/30 p-3 rounded">
+                            <div class="text-sm"><strong>کالا:</strong> ${request.item}</div>
+                            <div class="text-sm"><strong>مقدار:</strong> ${request.amount.toLocaleString()}</div>
+                            <div class="text-sm"><strong>قیمت:</strong> ${request.price.toLocaleString()} میلیون دلار</div>
+                        </div>
+                    </div>
+                `;
+                
+                document.getElementById('tradeRequestModal').classList.remove('hidden');
+                document.getElementById('tradeRequestModal').classList.add('flex');
+            }
+        }
+
+        function acceptTradeRequest() {
+            const request = gameData.currentTradeRequest;
+            if (!request) return;
+            
+            const buyerCountry = gameData.countries[gameData.currentUser];
+            const sellerCountry = gameData.countries[request.from];
+            
+            if (buyerCountry && sellerCountry) {
+                // Transfer money
+                buyerCountry.economy = Math.max(0, buyerCountry.economy - (request.price * 1000000));
+                sellerCountry.economy += request.price * 1000000;
+                
+                // Create news
+                const newsItem = {
+                    id: Date.now(),
+                    type: 'trade',
+                    title: `💱 معامله تجاری ${request.fromCountry} و ${gameData.users[gameData.currentUser].country}`,
+                    content: `${request.fromFlag} ${request.fromCountry} ${request.amount.toLocaleString()} واحد ${request.item} به ${gameData.users[gameData.currentUser].flag} ${gameData.users[gameData.currentUser].country} به قیمت ${request.price.toLocaleString()} میلیون دلار فروخت.`,
+                    timestamp: new Date().toLocaleString('fa-IR'),
+                    author: 'سیستم تجاری',
+                    isPublic: true
+                };
+                
+                gameData.newsItems.unshift(newsItem);
+                
+                showNotification('✅ معامله با موفقیت انجام شد!', 'success');
+                updateCountryStats();
+            }
+            
+            // Mark request as processed
+            request.processed = true;
+            closeTradeRequestModal();
+        }
+
+        function rejectTradeRequest() {
+            const request = gameData.currentTradeRequest;
+            if (!request) return;
+            
+            // Mark request as processed
+            request.processed = true;
+            showNotification('❌ درخواست تجاری رد شد!', 'info');
+            closeTradeRequestModal();
+        }
+
+        function closeTradeRequestModal() {
+            document.getElementById('tradeRequestModal').classList.add('hidden');
+            document.getElementById('tradeRequestModal').classList.remove('flex');
+            gameData.currentTradeRequest = null;
+        }
+
+
+
+        function sendStatement() {
+            document.getElementById('statementModal').classList.remove('hidden');
+            document.getElementById('statementModal').classList.add('flex');
+        }
+
+        function closeStatementModal() {
+            document.getElementById('statementModal').classList.add('hidden');
+            document.getElementById('statementModal').classList.remove('flex');
+        }
+
+        function publishStatement() {
+            const title = document.getElementById('statementTitle').value;
+            const text = document.getElementById('statementText').value;
+            
+            if (!title || !text) {
+                showNotification('❌ لطفاً تمام فیلدها را پر کنید!', 'error');
+                return;
+            }
+            
+            showNotification('📢 بیانیه شما منتشر شد!', 'success');
+            
+            // Clear form
+            document.getElementById('statementTitle').value = '';
+            document.getElementById('statementText').value = '';
+            
+            closeStatementModal();
+        }
+
+        function economicSanction() {
+            document.getElementById('sanctionModal').classList.remove('hidden');
+            document.getElementById('sanctionModal').classList.add('flex');
+        }
+
+        function closeSanctionModal() {
+            document.getElementById('sanctionModal').classList.add('hidden');
+            document.getElementById('sanctionModal').classList.remove('flex');
+        }
+
+        function executeSanction() {
+            const target = document.getElementById('sanctionTarget').value;
+            const sanctionType = document.getElementById('sanctionType').value;
+            
+            showNotification(`🚫 ${sanctionType} علیه ${target} اعمال شد!`, 'warning');
+            closeSanctionModal();
+        }
+
+        function sendScenario() {
+            document.getElementById('scenarioModal').classList.remove('hidden');
+            document.getElementById('scenarioModal').classList.add('flex');
+        }
+
+        function closeScenarioModal() {
+            document.getElementById('scenarioModal').classList.add('hidden');
+            document.getElementById('scenarioModal').classList.remove('flex');
+        }
+
+        function submitScenario() {
+            const title = document.getElementById('scenarioTitle').value;
+            const text = document.getElementById('scenarioText').value;
+            
+            if (!title || !text) {
+                showNotification('❌ لطفاً تمام فیلدها را پر کنید!', 'error');
+                return;
+            }
+            
+            const user = gameData.users[gameData.currentUser];
+            gameData.adminRequests.push({
+                type: 'scenario',
+                title: title,
+                content: text,
+                country: user.country,
+                timestamp: new Date().toLocaleString('fa-IR')
+            });
+            
+            showNotification('📝 سناریو برای ادمین ارسال شد!', 'success');
+            
+            // Clear form
+            document.getElementById('scenarioTitle').value = '';
+            document.getElementById('scenarioText').value = '';
+            
+            closeScenarioModal();
+        }
+
+        function sendRole() {
+            document.getElementById('roleModal').classList.remove('hidden');
+            document.getElementById('roleModal').classList.add('flex');
+        }
+
+        function closeRoleModal() {
+            document.getElementById('roleModal').classList.add('hidden');
+            document.getElementById('roleModal').classList.remove('flex');
+        }
+
+        function submitRole() {
+            const title = document.getElementById('roleTitle').value;
+            const text = document.getElementById('roleText').value;
+            
+            if (!title || !text) {
+                showNotification('❌ لطفاً تمام فیلدها را پر کنید!', 'error');
+                return;
+            }
+            
+            const user = gameData.users[gameData.currentUser];
+            gameData.adminRequests.push({
+                type: 'role',
+                title: title,
+                content: text,
+                country: user.country,
+                timestamp: new Date().toLocaleString('fa-IR')
+            });
+            
+            showNotification('🎭 رول برای ادمین ارسال شد!', 'success');
+            
+            // Clear form
+            document.getElementById('roleTitle').value = '';
+            document.getElementById('roleText').value = '';
+            
+            closeRoleModal();
+        }
+
+        function publishStatement() {
+            const title = document.getElementById('statementTitle').value;
+            const text = document.getElementById('statementText').value;
+            
+            if (!title || !text) {
+                showNotification('❌ لطفاً تمام فیلدها را پر کنید!', 'error');
+                return;
+            }
+            
+            const user = gameData.users[gameData.currentUser];
+            const statement = {
+                id: Date.now(),
+                title: title,
+                content: text,
+                country: user.country,
+                flag: user.flag,
+                author: gameData.currentUser,
+                timestamp: new Date().toLocaleString('fa-IR')
+            };
+            
+            gameData.statements.unshift(statement);
+            
+            showNotification('📢 بیانیه شما منتشر شد!', 'success');
+            
+            // Clear form
+            document.getElementById('statementTitle').value = '';
+            document.getElementById('statementText').value = '';
+            
+            closeStatementModal();
+            loadNews();
+        }
+
+        function loadNews() {
+            const container = document.getElementById('newsFeed');
+            container.innerHTML = '';
+            
+            const currentUserData = gameData.users[gameData.currentUser];
+            const isAdmin = currentUserData && currentUserData.role === 'admin';
+            
+            // Combine all news items
+            let allNews = [...gameData.newsItems];
+            
+            // Add statements to news
+            gameData.statements.forEach(statement => {
+                allNews.push({
+                    id: statement.id,
+                    type: 'statement',
+                    title: `📜 ${statement.title}`,
+                    content: statement.content,
+                    timestamp: statement.timestamp,
+                    author: statement.author,
+                    flag: statement.flag,
+                    country: statement.country,
+                    isStatement: true
+                });
+            });
+            
+            // Sort by timestamp (newest first)
+            allNews.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            
+            // Filter news based on user role
+            const visibleNews = allNews.filter(item => {
+                if (item.isAdminOnly && !isAdmin) return false;
+                return true;
+            });
+            
+            if (visibleNews.length === 0) {
+                container.innerHTML = `
+                    <div class="bg-red-900/30 p-3 rounded">
+                        <div class="font-semibold text-red-400">🚨 هشدار امنیتی</div>
+                        <div class="text-sm text-gray-300">حمله سایبری به زیرساخت‌های کشور شناسایی شد</div>
+                        <div class="text-xs text-gray-500 mt-1">5 دقیقه پیش</div>
+                    </div>
+                    <div class="bg-green-900/30 p-3 rounded">
+                        <div class="font-semibold text-green-400">💰 اقتصاد</div>
+                        <div class="text-sm text-gray-300">صادرات نفت 15% افزایش یافت</div>
+                        <div class="text-xs text-gray-500 mt-1">12 دقیقه پیش</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            visibleNews.forEach(item => {
+                const div = document.createElement('div');
+                let bgColor = 'bg-blue-900/30';
+                
+                switch(item.type) {
+                    case 'attack': bgColor = 'bg-red-900/30'; break;
+                    case 'war': bgColor = 'bg-red-800/30'; break;
+                    case 'war_admin': bgColor = 'bg-red-700/30'; break;
+                    case 'trade': bgColor = 'bg-green-900/30'; break;
+                    case 'statement': bgColor = 'bg-yellow-900/30'; break;
+                    case 'global': bgColor = 'bg-purple-900/30'; break;
+                }
+                
+                div.className = `${bgColor} p-3 rounded mb-2`;
+                div.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <div class="font-semibold text-white">${item.title}</div>
+                            <div class="text-sm text-gray-300 mt-1">${item.content}</div>
+                            <div class="text-xs text-gray-500 mt-1">${item.timestamp}</div>
+                        </div>
+                        ${item.isStatement && item.author === gameData.currentUser ? 
+                            `<button onclick="deleteStatement(${item.id})" class="text-red-400 hover:text-red-300 text-xs">❌</button>` : 
+                            ''
+                        }
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function deleteStatement(statementId) {
+            gameData.statements = gameData.statements.filter(s => s.id !== statementId);
+            loadNews();
+            showNotification('🗑️ بیانیه حذف شد!', 'info');
+        }
+
+        function updateCountryStats() {
+            const country = gameData.countries[gameData.currentUser];
+            if (country) {
+                document.getElementById('countryEconomy').textContent = country.economy.toLocaleString();
+                document.getElementById('countryMilitary').textContent = country.military.toLocaleString();
+                document.getElementById('countryProduction').textContent = country.production + '%';
+                document.getElementById('countryDefense').textContent = country.defense + '%';
+                
+                // Update equipment display
+                if (country.equipment) {
+                    document.getElementById('countryMissiles').textContent = country.equipment.missiles;
+                    document.getElementById('countryTanks').textContent = country.equipment.tanks;
+                    document.getElementById('countryFighters').textContent = country.equipment.fighters;
+                    document.getElementById('countryHelicopters').textContent = country.equipment.helicopters;
+                    document.getElementById('countryAirDefense').textContent = country.equipment.airDefense;
+                    document.getElementById('countryPersonnel').textContent = country.equipment.personnel.toLocaleString();
+                }
+            }
+        }
+
+        // Utility Functions
+        function logout() {
+            gameData.currentUser = null;
+            document.getElementById('adminPanel').classList.add('hidden');
+            document.getElementById('countryPanel').classList.add('hidden');
+            document.getElementById('loginPage').classList.remove('hidden');
+            
+            // Clear login form
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            
+            showNotification('👋 با موفقیت خارج شدید!', 'info');
+        }
+
+        function showNotification(message, type) {
+            const colors = {
+                'success': 'bg-green-600',
+                'warning': 'bg-yellow-600',
+                'error': 'bg-red-600',
+                'info': 'bg-blue-600'
+            };
+
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 ${colors[type]} text-white px-6 py-3 rounded-lg shadow-lg z-50 transform translate-x-full transition-transform`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.classList.remove('translate-x-full');
+            }, 100);
+
+            setTimeout(() => {
+                notification.classList.add('translate-x-full');
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Economic multiplier slider
+        document.getElementById('economicMultiplier').addEventListener('input', function() {
+            document.getElementById('economicValue').textContent = this.value + 'x';
+        });
+
+        // Auto-update stats
+        setInterval(() => {
+            if (gameData.currentUser && gameData.users[gameData.currentUser].role === 'country') {
+                const country = gameData.countries[gameData.currentUser];
+                if (country) {
+                    // Random economic fluctuations
+                    const change = Math.floor(Math.random() * 20000) - 10000;
+                    country.economy = Math.max(0, country.economy + change);
+                    updateCountryStats();
+                }
+            }
+        }, 30000); // Update every 30 seconds
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9693bdcbe69f82bf',t:'MTc1NDIwMjM2NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
